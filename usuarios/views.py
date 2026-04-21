@@ -239,23 +239,32 @@ def lista_lideres(request):
         messages.error(request, 'Sem permissão para acessar líderes.')
         return render(request, 'core/sem_permissao.html')
 
-    lideres = Usuario.objects.filter(tipo_usuario='lider').order_by('first_name', 'username')
+    lideres = Usuario.objects.filter(tipo_usuario='lider').select_related(
+        'supervisor_responsavel',
+        'supervisor_responsavel__coordenador_responsavel'
+    ).order_by('first_name', 'username')
 
     if request.user.tipo_usuario == 'coordenador':
         lideres = lideres.filter(
             supervisor_responsavel__coordenador_responsavel=request.user
-        ).distinct()
+        )
 
-    if request.user.tipo_usuario == 'supervisor':
+    elif request.user.tipo_usuario == 'supervisor':
         lideres = lideres.filter(
             supervisor_responsavel=request.user
-        ).distinct()
+        )
 
     busca = request.GET.get('busca', '').strip()
     status = request.GET.get('status', '').strip()
 
     if busca:
-        lideres = lideres.filter(first_name__icontains=busca) | lideres.filter(username__icontains=busca)
+        lideres = lideres.filter(
+            first_name__icontains=busca
+        ) | lideres.filter(
+            last_name__icontains=busca
+        ) | lideres.filter(
+            username__icontains=busca
+        )
 
     if status == 'ativos':
         lideres = lideres.filter(ativo=True)

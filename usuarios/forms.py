@@ -72,14 +72,16 @@ class CriarUsuarioForm(BaseStyledForm, forms.ModelForm):
                 ('supervisor', 'Supervisor'),
                 ('lider', 'Líder'),
             ]
-            self.fields['coordenador_responsavel'].widget = forms.HiddenInput()
 
-            if usuario_logado:
-                self.fields['supervisor_responsavel'].queryset = Usuario.objects.filter(
-                    tipo_usuario='supervisor',
-                    ativo=True,
-                    coordenador_responsavel=usuario_logado
-                ).order_by('first_name', 'username')
+            self.fields['coordenador_responsavel'].queryset = Usuario.objects.filter(
+                id=usuario_logado.id
+            )
+
+            self.fields['supervisor_responsavel'].queryset = Usuario.objects.filter(
+                tipo_usuario='supervisor',
+                ativo=True,
+                coordenador_responsavel=usuario_logado
+            ).order_by('first_name', 'username')
 
         elif tipo_logado == 'admin':
             self.fields['tipo_usuario'].choices = [
@@ -112,12 +114,12 @@ class CriarUsuarioForm(BaseStyledForm, forms.ModelForm):
             cleaned_data['coordenador_responsavel'] = None
             cleaned_data['supervisor_responsavel'] = None
 
-        if tipo_usuario == 'supervisor':
+        elif tipo_usuario == 'supervisor':
             cleaned_data['supervisor_responsavel'] = None
             if not coordenador_responsavel:
                 raise forms.ValidationError('Supervisor precisa ter um coordenador responsável.')
 
-        if tipo_usuario == 'lider':
+        elif tipo_usuario == 'lider':
             cleaned_data['coordenador_responsavel'] = None
             if not supervisor_responsavel:
                 raise forms.ValidationError('Líder precisa ter um supervisor responsável.')

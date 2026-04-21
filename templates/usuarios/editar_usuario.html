@@ -51,29 +51,29 @@
             {% endif %}
         </div>
 
-        {% if form.coordenador_responsavel.field.widget.input_type != 'hidden' %}
-            <div class="form-group">
-                <label>Coordenador responsável</label>
-                {{ form.coordenador_responsavel }}
-                {% if form.coordenador_responsavel.errors %}
-                    <div class="field-errors">{{ form.coordenador_responsavel.errors }}</div>
-                {% endif %}
-            </div>
-        {% else %}
+        <div
+            class="form-group"
+            id="coordenador-responsavel-group"
+            {% if form.coordenador_responsavel.field.widget.input_type == 'hidden' %}style="display:none;"{% endif %}
+        >
+            <label>Coordenador responsável</label>
             {{ form.coordenador_responsavel }}
-        {% endif %}
+            {% if form.coordenador_responsavel.errors %}
+                <div class="field-errors">{{ form.coordenador_responsavel.errors }}</div>
+            {% endif %}
+        </div>
 
-        {% if form.supervisor_responsavel.field.widget.input_type != 'hidden' %}
-            <div class="form-group">
-                <label>Supervisor responsável</label>
-                {{ form.supervisor_responsavel }}
-                {% if form.supervisor_responsavel.errors %}
-                    <div class="field-errors">{{ form.supervisor_responsavel.errors }}</div>
-                {% endif %}
-            </div>
-        {% else %}
+        <div
+            class="form-group"
+            id="supervisor-responsavel-group"
+            {% if form.supervisor_responsavel.field.widget.input_type == 'hidden' %}style="display:none;"{% endif %}
+        >
+            <label>Supervisor responsável</label>
             {{ form.supervisor_responsavel }}
-        {% endif %}
+            {% if form.supervisor_responsavel.errors %}
+                <div class="field-errors">{{ form.supervisor_responsavel.errors }}</div>
+            {% endif %}
+        </div>
 
         <div class="form-group">
             <label style="display:flex; align-items:center; gap:10px;">
@@ -91,4 +91,19 @@
         </div>
     </form>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const coordenadorGroup = document.getElementById('coordenador-responsavel-group');
+        const supervisorGroup = document.getElementById('supervisor-responsavel-group');
+
+        if (coordenadorGroup && coordenadorGroup.querySelector('input[type="hidden"], select') === null) {
+            coordenadorGroup.style.display = 'none';
+        }
+
+        if (supervisorGroup && supervisorGroup.querySelector('input[type="hidden"], select') === null) {
+            supervisorGroup.style.display = 'none';
+        }
+    });
+</script>
 {% endblock %}

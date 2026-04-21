@@ -1,43 +1,36 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ supervisor.get_full_name|default:supervisor.username }}{% endblock %}
+{% block title %}Líderes{% endblock %}
 
 {% block content %}
-{% with page_title=supervisor.get_full_name|default:supervisor.username page_subtitle='Veja líderes e grupos vinculados a este supervisor.' %}
+{% with page_title='Líderes' page_subtitle='Acompanhe os líderes cadastrados e seus vínculos.' %}
     {% include 'partials/page_header.html' with page_title=page_title page_subtitle=page_subtitle breadcrumbs=breadcrumbs page_actions=page_actions %}
 {% endwith %}
 
-<div class="grid-cards">
-    <div class="card">
-        <h3>Usuário</h3>
-        <strong>{{ supervisor.username }}</strong>
-    </div>
-    <div class="card">
-        <h3>Total de líderes</h3>
-        <strong>{{ total_lideres }}</strong>
-    </div>
-    <div class="card">
-        <h3>Total de grupos</h3>
-        <strong>{{ total_grupos }}</strong>
-    </div>
-</div>
+<div class="section">
+    <form method="get" class="actions">
+        <div class="form-group" style="flex:1;">
+            <label>Buscar líder</label>
+            <input type="text" name="busca" value="{{ filtros.busca }}" placeholder="Nome ou usuário">
+        </div>
 
-<div class="section info-list">
-    <p><strong>Email:</strong> {{ supervisor.email|default:'-' }}</p>
-    <p><strong>Telefone:</strong> {{ supervisor.telefone|default:'-' }}</p>
-    <p><strong>Coordenador:</strong> {{ supervisor.coordenador_responsavel.get_full_name|default:'-' }}</p>
-    <p><strong>Status:</strong>
-        {% if supervisor.ativo %}
-            <span class="badge badge-success">Ativo</span>
-        {% else %}
-            <span class="badge badge-danger">Inativo</span>
-        {% endif %}
-    </p>
+        <div class="form-group">
+            <label>Status</label>
+            <select name="status">
+                <option value="">Todos</option>
+                <option value="ativos" {% if filtros.status == 'ativos' %}selected{% endif %}>Ativos</option>
+                <option value="inativos" {% if filtros.status == 'inativos' %}selected{% endif %}>Inativos</option>
+            </select>
+        </div>
+
+        <div class="actions" style="margin-top:24px;">
+            <button class="btn" type="submit">Filtrar</button>
+            <a class="btn btn-secondary" href="{% url 'lista_lideres' %}">Limpar</a>
+        </div>
+    </form>
 </div>
 
 <div class="section">
-    <h2>Líderes vinculados</h2>
-
     {% if lideres %}
         <div class="desktop-only">
             <div class="table-wrap">
@@ -47,14 +40,28 @@
                             <th>Nome</th>
                             <th>Usuário</th>
                             <th>Email</th>
+                            <th>Supervisor</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for lider in lideres %}
                             <tr>
-                                <td><a href="{% url 'detalhe_lider' lider.id %}">{{ lider.get_full_name|default:lider.username }}</a></td>
+                                <td>
+                                    <a href="{% url 'detalhe_lider' lider.id %}">
+                                        {{ lider.get_full_name|default:lider.username }}
+                                    </a>
+                                </td>
                                 <td>{{ lider.username }}</td>
                                 <td>{{ lider.email|default:'-' }}</td>
+                                <td>{{ lider.supervisor_responsavel.get_full_name|default:lider.supervisor_responsavel.username|default:'-' }}</td>
+                                <td>
+                                    {% if lider.ativo %}
+                                        <span class="badge badge-success">Ativo</span>
+                                    {% else %}
+                                        <span class="badge badge-danger">Inativo</span>
+                                    {% endif %}
+                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -69,80 +76,40 @@
                         <div class="mobile-card-header">
                             <div>
                                 <div class="mobile-card-title">
-                                    <a href="{% url 'detalhe_lider' lider.id %}">{{ lider.get_full_name|default:lider.username }}</a>
+                                    <a href="{% url 'detalhe_lider' lider.id %}">
+                                        {{ lider.get_full_name|default:lider.username }}
+                                    </a>
                                 </div>
                                 <div class="mobile-card-subtitle">{{ lider.username }}</div>
+                            </div>
+                            <div>
+                                {% if lider.ativo %}
+                                    <span class="badge badge-success">Ativo</span>
+                                {% else %}
+                                    <span class="badge badge-danger">Inativo</span>
+                                {% endif %}
                             </div>
                         </div>
 
                         <div class="mobile-card-body">
                             <div class="mobile-item"><strong>Email:</strong> {{ lider.email|default:'-' }}</div>
+                            <div class="mobile-item"><strong>Supervisor:</strong> {{ lider.supervisor_responsavel.get_full_name|default:lider.supervisor_responsavel.username|default:'-' }}</div>
+                        </div>
+
+                        <div class="mobile-card-actions">
+                            <a class="btn btn-secondary" href="{% url 'detalhe_lider' lider.id %}">Ver líder</a>
                         </div>
                     </div>
                 {% endfor %}
             </div>
         </div>
+
+        {% include 'partials/pagination.html' %}
     {% else %}
         <div class="empty-state">
-            <div class="empty-state-icon">👤</div>
-            <h3>Nenhum líder vinculado</h3>
-            <p>Este supervisor ainda não possui líderes vinculados.</p>
-        </div>
-    {% endif %}
-</div>
-
-<div class="section">
-    <h2>Grupos supervisionados</h2>
-
-    {% if grupos %}
-        <div class="desktop-only">
-            <div class="table-wrap">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Grupo</th>
-                            <th>Escola</th>
-                            <th>Líder</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for grupo in grupos %}
-                            <tr>
-                                <td><a href="{% url 'detalhe_grupo' grupo.id %}">{{ grupo.nome }}</a></td>
-                                <td>{{ grupo.escola.nome }}</td>
-                                <td>{{ grupo.lider.get_full_name|default:grupo.lider.username }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="mobile-only">
-            <div class="mobile-list">
-                {% for grupo in grupos %}
-                    <div class="mobile-card">
-                        <div class="mobile-card-header">
-                            <div>
-                                <div class="mobile-card-title">
-                                    <a href="{% url 'detalhe_grupo' grupo.id %}">{{ grupo.nome }}</a>
-                                </div>
-                                <div class="mobile-card-subtitle">{{ grupo.escola.nome }}</div>
-                            </div>
-                        </div>
-
-                        <div class="mobile-card-body">
-                            <div class="mobile-item"><strong>Líder:</strong> {{ grupo.lider.get_full_name|default:grupo.lider.username }}</div>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-    {% else %}
-        <div class="empty-state">
-            <div class="empty-state-icon">📚</div>
-            <h3>Nenhum grupo supervisionado</h3>
-            <p>Este supervisor ainda não possui grupos vinculados.</p>
+            <div class="empty-state-icon">🙌</div>
+            <h3>Nenhum líder encontrado</h3>
+            <p>Cadastre um líder ou ajuste os filtros para continuar.</p>
         </div>
     {% endif %}
 </div>
