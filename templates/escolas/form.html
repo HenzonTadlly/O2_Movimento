@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ titulo }}{% endblock %}
+
+{% block content %}
+{% with page_title=titulo page_subtitle='Cadastre ou atualize os dados da escola.' %}
+    {% include 'partials/page_header.html' with page_title=page_title page_subtitle=page_subtitle breadcrumbs=breadcrumbs page_actions=page_actions %}
+{% endwith %}
+
+<div class="section">
+    <form method="post">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="form-group">
+            <label>Nome</label>
+            {{ form.nome }}
+            {% if form.nome.errors %}
+                <div class="field-errors">{{ form.nome.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label>Bairro</label>
+            {{ form.bairro }}
+            {% if form.bairro.errors %}
+                <div class="field-errors">{{ form.bairro.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label>Cidade</label>
+            {{ form.cidade }}
+            {% if form.cidade.errors %}
+                <div class="field-errors">{{ form.cidade.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label>Observação</label>
+            {{ form.observacao }}
+            {% if form.observacao.errors %}
+                <div class="field-errors">{{ form.observacao.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label style="display:flex; align-items:center; gap:10px;">
+                {{ form.ativa }}
+                <span>Escola ativa</span>
+            </label>
+            {% if form.ativa.errors %}
+                <div class="field-errors">{{ form.ativa.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="actions">
+            <button class="btn" type="submit">Salvar escola</button>
+            <a class="btn btn-secondary" href="{% url 'lista_escolas' %}">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

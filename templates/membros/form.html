@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ titulo }}{% endblock %}
+
+{% block content %}
+{% with page_title=titulo page_subtitle='Cadastre ou atualize os dados do membro.' %}
+    {% include 'partials/page_header.html' with page_title=page_title page_subtitle=page_subtitle breadcrumbs=breadcrumbs page_actions=page_actions %}
+{% endwith %}
+
+<div class="section">
+    <form method="post">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="form-group">
+            <label>Nome completo</label>
+            {{ form.nome_completo }}
+            {% if form.nome_completo.errors %}
+                <div class="field-errors">{{ form.nome_completo.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label>Telefone</label>
+            {{ form.telefone }}
+            {% if form.telefone.errors %}
+                <div class="field-errors">{{ form.telefone.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label>Idade</label>
+            {{ form.idade }}
+            {% if form.idade.errors %}
+                <div class="field-errors">{{ form.idade.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label>Escola</label>
+            {{ form.escola }}
+            {% if form.escola.errors %}
+                <div class="field-errors">{{ form.escola.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label>Ano escolar</label>
+            {{ form.ano_escolar }}
+            {% if form.ano_escolar.errors %}
+                <div class="field-errors">{{ form.ano_escolar.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label>Observação</label>
+            {{ form.observacao }}
+            {% if form.observacao.errors %}
+                <div class="field-errors">{{ form.observacao.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label style="display:flex; align-items:center; gap:10px;">
+                {{ form.ativo }}
+                <span>Membro ativo</span>
+            </label>
+            {% if form.ativo.errors %}
+                <div class="field-errors">{{ form.ativo.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="actions">
+            <button class="btn" type="submit">Salvar membro</button>
+            <a class="btn btn-secondary" href="{% url 'lista_membros' grupo.id %}">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}Grupos O2{% endblock %}
+
+{% block content %}
+{% with page_title='Grupos / O2' page_subtitle='Gerencie os grupos, filtre por escola e acompanhe o andamento.' %}
+    {% include 'partials/page_header.html' with page_title=page_title page_subtitle=page_subtitle breadcrumbs=breadcrumbs page_actions=page_actions %}
+{% endwith %}
+
+<div class="section">
+    <form method="get" class="actions">
+        <div class="form-group" style="flex:1;">
+            <label>Buscar grupo</label>
+            <input type="text" name="busca" value="{{ filtros.busca }}" placeholder="Digite o nome do grupo">
+        </div>
+
+        <div class="form-group">
+            <label>Status</label>
+            <select name="status">
+                <option value="">Todos</option>
+                <option value="ativo" {% if filtros.status == 'ativo' %}selected{% endif %}>Ativo</option>
+                <option value="inativo" {% if filtros.status == 'inativo' %}selected{% endif %}>Inativo</option>
+                <option value="multiplicado" {% if filtros.status == 'multiplicado' %}selected{% endif %}>Multiplicado</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Escola</label>
+            <select name="escola">
+                <option value="">Todas</option>
+                {% for escola in escolas %}
+                    <option value="{{ escola.id }}" {% if filtros.escola == escola.id|stringformat:"s" %}selected{% endif %}>
+                        {{ escola.nome }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="actions" style="margin-top: 24px;">
+            <button class="btn" type="submit">Filtrar</button>
+            <a class="btn btn-secondary" href="{% url 'lista_grupos' %}">Limpar</a>
+        </div>
+    </form>
+</div>
+
+<div class="section">
+    {% if grupos %}
+        <div class="desktop-only">
+            <div class="table-wrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Grupo</th>
+                            <th>Escola</th>
+                            <th>Líder</th>
+                            <th>Status</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for grupo in grupos %}
+                            <tr>
+                                <td>{{ grupo.nome }}</td>
+                                <td>{{ grupo.escola.nome }}</td>
+                                <td>{{ grupo.lider.get_full_name|default:grupo.lider.username }}</td>
+                                <td>
+                                    {% if grupo.status == 'ativo' %}
+                                        <span class="badge badge-success">Ativo</span>
+                                    {% elif grupo.status == 'inativo' %}
+                                        <span class="badge badge-danger">Inativo</span>
+                                    {% else %}
+                                        <span class="badge badge-warning">{{ grupo.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a class="btn btn-secondary" href="{% url 'detalhe_grupo' grupo.id %}">Abrir</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mobile-only">
+            <div class="mobile-list">
+                {% for grupo in grupos %}
+                    <div class="mobile-card">
+                        <div class="mobile-card-header">
+                            <div>
+                                <div class="mobile-card-title">{{ grupo.nome }}</div>
+                                <div class="mobile-card-subtitle">{{ grupo.escola.nome }}</div>
+                            </div>
+                            <div>
+                                {% if grupo.status == 'ativo' %}
+                                    <span class="badge badge-success">Ativo</span>
+                                {% elif grupo.status == 'inativo' %}
+                                    <span class="badge badge-danger">Inativo</span>
+                                {% else %}
+                                    <span class="badge badge-warning">{{ grupo.status }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mobile-card-body">
+                            <div class="mobile-item"><strong>Líder:</strong> {{ grupo.lider.get_full_name|default:grupo.lider.username }}</div>
+                        </div>
+
+                        <div class="mobile-card-actions">
+                            <a class="btn btn-secondary" href="{% url 'detalhe_grupo' grupo.id %}">Abrir grupo</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% include 'partials/pagination.html' %}
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">📚</div>
+            <h3>Nenhum grupo encontrado</h3>
+            <p>Não existem grupos cadastrados com os filtros atuais.</p>
+            {% if request.user.tipo_usuario == 'admin' or request.user.tipo_usuario == 'coordenador' or request.user.tipo_usuario == 'supervisor' %}
+                <div class="actions">
+                    <a class="btn" href="{% url 'criar_grupo' %}">Criar grupo</a>
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

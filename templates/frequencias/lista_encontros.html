@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Encontros - {{ grupo.nome }}{% endblock %}
+
+{% block content %}
+{% with page_title='Encontros do grupo' page_subtitle='Acompanhe o histórico de frequências registradas.' %}
+    {% include 'partials/page_header.html' with page_title=page_title page_subtitle=page_subtitle breadcrumbs=breadcrumbs page_actions=page_actions %}
+{% endwith %}
+
+<div class="section">
+    {% if encontros %}
+        <div class="desktop-only">
+            <div class="table-wrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Observação</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for encontro in encontros %}
+                            <tr>
+                                <td>{{ encontro.data_encontro }}</td>
+                                <td>{{ encontro.observacao|default:'-' }}</td>
+                                <td>
+                                    <div class="actions" style="margin-bottom: 0;">
+                                        <a class="btn btn-secondary" href="{% url 'detalhe_encontro' encontro.id %}">Abrir</a>
+                                        <a class="btn btn-secondary" href="{% url 'editar_frequencia' encontro.id %}">Editar</a>
+                                        <a class="btn btn-secondary" href="{% url 'excluir_frequencia' encontro.id %}">Excluir</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mobile-only">
+            <div class="mobile-list">
+                {% for encontro in encontros %}
+                    <div class="mobile-card">
+                        <div class="mobile-card-header">
+                            <div>
+                                <div class="mobile-card-title">{{ encontro.data_encontro }}</div>
+                                <div class="mobile-card-subtitle">{{ grupo.nome }}</div>
+                            </div>
+                        </div>
+
+                        <div class="mobile-card-body">
+                            <div class="mobile-item"><strong>Observação:</strong> {{ encontro.observacao|default:'-' }}</div>
+                        </div>
+
+                        <div class="mobile-card-actions">
+                            <a class="btn btn-secondary" href="{% url 'detalhe_encontro' encontro.id %}">Abrir encontro</a>
+                            <a class="btn btn-secondary" href="{% url 'editar_frequencia' encontro.id %}">Editar frequência</a>
+                            <a class="btn btn-secondary" href="{% url 'excluir_frequencia' encontro.id %}">Excluir frequência</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">📅</div>
+            <h3>Nenhum encontro registrado</h3>
+            <p>Ainda não existe frequência lançada para este grupo.</p>
+            <div class="actions">
+                <a class="btn" href="{% url 'lancar_frequencia' grupo.id %}">Lançar primeira frequência</a>
+                <a class="btn btn-secondary" href="{% url 'detalhe_grupo' grupo.id %}">Voltar ao grupo</a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

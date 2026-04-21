@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}Supervisores{% endblock %}
+
+{% block content %}
+{% with page_title='Supervisores' page_subtitle='Acompanhe os supervisores cadastrados e seus vínculos.' %}
+    {% include 'partials/page_header.html' with page_title=page_title page_subtitle=page_subtitle breadcrumbs=breadcrumbs page_actions=page_actions %}
+{% endwith %}
+
+<div class="section">
+    <form method="get" class="actions">
+        <div class="form-group" style="flex:1;">
+            <label>Buscar supervisor</label>
+            <input type="text" name="busca" value="{{ filtros.busca }}" placeholder="Nome ou usuário">
+        </div>
+
+        <div class="form-group">
+            <label>Status</label>
+            <select name="status">
+                <option value="">Todos</option>
+                <option value="ativos" {% if filtros.status == 'ativos' %}selected{% endif %}>Ativos</option>
+                <option value="inativos" {% if filtros.status == 'inativos' %}selected{% endif %}>Inativos</option>
+            </select>
+        </div>
+
+        <div class="actions" style="margin-top:24px;">
+            <button class="btn" type="submit">Filtrar</button>
+            <a class="btn btn-secondary" href="{% url 'lista_supervisores' %}">Limpar</a>
+        </div>
+    </form>
+</div>
+
+<div class="section">
+    {% if supervisores %}
+        <div class="desktop-only">
+            <div class="table-wrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Usuário</th>
+                            <th>Email</th>
+                            <th>Coordenador</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for supervisor in supervisores %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'detalhe_supervisor' supervisor.id %}">
+                                        {{ supervisor.get_full_name|default:supervisor.username }}
+                                    </a>
+                                </td>
+                                <td>{{ supervisor.username }}</td>
+                                <td>{{ supervisor.email|default:'-' }}</td>
+                                <td>{{ supervisor.coordenador_responsavel.get_full_name|default:'-' }}</td>
+                                <td>
+                                    <a class="btn btn-secondary" href="{% url 'detalhe_supervisor' supervisor.id %}">Abrir</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mobile-only">
+            <div class="mobile-list">
+                {% for supervisor in supervisores %}
+                    <div class="mobile-card">
+                        <div class="mobile-card-header">
+                            <div>
+                                <div class="mobile-card-title">
+                                    <a href="{% url 'detalhe_supervisor' supervisor.id %}">
+                                        {{ supervisor.get_full_name|default:supervisor.username }}
+                                    </a>
+                                </div>
+                                <div class="mobile-card-subtitle">{{ supervisor.username }}</div>
+                            </div>
+                        </div>
+
+                        <div class="mobile-card-body">
+                            <div class="mobile-item"><strong>Email:</strong> {{ supervisor.email|default:'-' }}</div>
+                            <div class="mobile-item"><strong>Coordenador:</strong> {{ supervisor.coordenador_responsavel.get_full_name|default:'-' }}</div>
+                        </div>
+
+                        <div class="mobile-card-actions">
+                            <a class="btn btn-secondary" href="{% url 'detalhe_supervisor' supervisor.id %}">Ver supervisor</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% include 'partials/pagination.html' %}
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">🧑‍💼</div>
+            <h3>Nenhum supervisor encontrado</h3>
+            <p>Cadastre um supervisor ou ajuste os filtros para continuar.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

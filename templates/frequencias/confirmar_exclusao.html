@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Excluir frequência{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Excluir frequência</h1>
+
+<div class="confirm-box confirm-danger">
+    <h2>Confirmação de exclusão</h2>
+    <p>Essa ação vai remover o encontro e todos os registros de presença ligados a ele.</p>
+    <p><strong>Grupo:</strong> {{ grupo.nome }}</p>
+    <p><strong>Data do encontro:</strong> {{ encontro.data_encontro }}</p>
+    <p><strong>Observação:</strong> {{ encontro.observacao|default:'-' }}</p>
+    <p><strong>Total de registros de presença:</strong> {{ total_frequencias }}</p>
+
+    <form method="post" style="margin-top: 18px;">
+        {% csrf_token %}
+        <div class="actions">
+            <button class="btn" type="submit">Confirmar exclusão</button>
+            <a class="btn btn-secondary" href="{% url 'detalhe_encontro' encontro.id %}">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

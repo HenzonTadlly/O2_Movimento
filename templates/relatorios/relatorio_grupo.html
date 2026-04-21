@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block title %}Relatório - {{ grupo.nome }}{% endblock %}
+
+{% block content %}
+{% with page_title='Relatório do grupo' page_subtitle='Veja a média de presença, últimos encontros e resumo por membro.' %}
+    {% include 'partials/page_header.html' with page_title=page_title page_subtitle=page_subtitle breadcrumbs=breadcrumbs page_actions=page_actions %}
+{% endwith %}
+
+<div class="grid-cards grid-4">
+    <div class="card">
+        <h3>Total de encontros</h3>
+        <strong>{{ total_encontros }}</strong>
+    </div>
+    <div class="card">
+        <h3>Total de membros</h3>
+        <strong>{{ total_membros }}</strong>
+    </div>
+    <div class="card">
+        <h3>Total de presenças</h3>
+        <strong>{{ total_presencas }}</strong>
+    </div>
+    <div class="card">
+        <h3>Média de presença</h3>
+        <strong>{{ media_presenca }}%</strong>
+    </div>
+</div>
+
+<div class="section info-list">
+    <p><strong>Grupo:</strong> {{ grupo.nome }}</p>
+    <p><strong>Escola:</strong> {{ grupo.escola.nome }}</p>
+    <p><strong>Líder:</strong> {{ grupo.lider.get_full_name|default:grupo.lider.username }}</p>
+    <p><strong>Supervisor:</strong> {{ grupo.supervisor.get_full_name|default:grupo.supervisor.username }}</p>
+</div>
+
+<div class="section">
+    <h2>Últimos encontros</h2>
+
+    {% if encontros %}
+        <div class="desktop-only">
+            <div class="table-wrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Observação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for encontro in encontros %}
+                            <tr>
+                                <td>{{ encontro.data_encontro }}</td>
+                                <td>{{ encontro.observacao|default:'-' }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mobile-only">
+            <div class="mobile-list">
+                {% for encontro in encontros %}
+                    <div class="mobile-card">
+                        <div class="mobile-card-header">
+                            <div class="mobile-card-title">{{ encontro.data_encontro }}</div>
+                        </div>
+                        <div class="mobile-card-body">
+                            <div class="mobile-item"><strong>Observação:</strong> {{ encontro.observacao|default:'-' }}</div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">📅</div>
+            <h3>Sem encontros registrados</h3>
+            <p>Este grupo ainda não possui encontros lançados.</p>
+        </div>
+    {% endif %}
+</div>
+
+<div class="section">
+    <h2>Resumo por membro</h2>
+
+    {% if membros_dados %}
+        <div class="desktop-only">
+            <div class="table-wrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Membro</th>
+                            <th>Presenças</th>
+                            <th>Faltas</th>
+                            <th>Registros</th>
+                            <th>Percentual</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in membros_dados %}
+                            <tr>
+                                <td>{{ item.obj.nome_completo }}</td>
+                                <td>{{ item.total_presencas }}</td>
+                                <td>{{ item.total_faltas }}</td>
+                                <td>{{ item.total_registros }}</td>
+                                <td>{{ item.percentual }}%</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mobile-only">
+            <div class="mobile-list">
+                {% for item in membros_dados %}
+                    <div class="mobile-card">
+                        <div class="mobile-card-header">
+                            <div class="mobile-card-title">{{ item.obj.nome_completo }}</div>
+                            <div>
+                                <span class="badge badge-warning">{{ item.percentual }}%</span>
+                            </div>
+                        </div>
+                        <div class="mobile-card-body">
+                            <div class="mobile-item"><strong>Presenças:</strong> {{ item.total_presencas }}</div>
+                            <div class="mobile-item"><strong>Faltas:</strong> {{ item.total_faltas }}</div>
+                            <div class="mobile-item"><strong>Registros:</strong> {{ item.total_registros }}</div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">📊</div>
+            <h3>Sem dados de presença</h3>
+            <p>Ainda não há registros suficientes para montar o relatório.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

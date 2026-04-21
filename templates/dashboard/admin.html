@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Admin{% endblock %}
+
+{% block content %}
+{% with page_title='Dashboard do Admin' page_subtitle='Visão geral do sistema, estrutura e alertas principais.' %}
+    {% include 'partials/page_header.html' with page_title=page_title page_subtitle=page_subtitle breadcrumbs=breadcrumbs page_actions=page_actions %}
+{% endwith %}
+
+<div class="grid-cards grid-4">
+    <div class="card">
+        <h3>Coordenadores</h3>
+        <strong>{{ total_coordenadores }}</strong>
+    </div>
+    <div class="card">
+        <h3>Supervisores</h3>
+        <strong>{{ total_supervisores }}</strong>
+    </div>
+    <div class="card">
+        <h3>Líderes</h3>
+        <strong>{{ total_lideres }}</strong>
+    </div>
+    <div class="card">
+        <h3>Escolas</h3>
+        <strong>{{ total_escolas }}</strong>
+    </div>
+    <div class="card">
+        <h3>Grupos</h3>
+        <strong>{{ total_grupos }}</strong>
+    </div>
+    <div class="card">
+        <h3>Membros</h3>
+        <strong>{{ total_membros }}</strong>
+    </div>
+    <div class="card">
+        <h3>Média de presença</h3>
+        <strong>{{ media_presenca }}%</strong>
+    </div>
+</div>
+
+<div class="section">
+    <h2>Grupos em alerta</h2>
+
+    <div class="mobile-list">
+        {% for item in grupos_alerta %}
+            <div class="mobile-card">
+                <div class="mobile-card-header">
+                    <div class="mobile-card-title">{{ item.grupo.nome }}</div>
+                    <div><span class="badge badge-danger">{{ item.percentual }}%</span></div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="mobile-card">
+                <div class="mobile-card-body">
+                    <div class="mobile-item">Nenhum grupo em alerta no momento.</div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

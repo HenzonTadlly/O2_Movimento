@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ escola.nome }}{% endblock %}
+
+{% block content %}
+{% with page_title=escola.nome page_subtitle='Visualize grupos, membros e informações gerais da escola.' %}
+    {% include 'partials/page_header.html' with page_title=page_title page_subtitle=page_subtitle breadcrumbs=breadcrumbs page_actions=page_actions %}
+{% endwith %}
+
+<div class="grid-cards">
+    <div class="card">
+        <h3>Bairro</h3>
+        <strong>{{ escola.bairro|default:'-' }}</strong>
+    </div>
+    <div class="card">
+        <h3>Cidade</h3>
+        <strong>{{ escola.cidade|default:'-' }}</strong>
+    </div>
+    <div class="card">
+        <h3>Total de grupos</h3>
+        <strong>{{ total_grupos }}</strong>
+    </div>
+    <div class="card">
+        <h3>Total de membros</h3>
+        <strong>{{ total_membros }}</strong>
+    </div>
+</div>
+
+<div class="section info-list">
+    <p><strong>Status:</strong>
+        {% if escola.ativa %}
+            <span class="badge badge-success">Ativa</span>
+        {% else %}
+            <span class="badge badge-danger">Inativa</span>
+        {% endif %}
+    </p>
+
+    {% if escola.observacao %}
+        <p><strong>Observação:</strong> {{ escola.observacao }}</p>
+    {% endif %}
+</div>
+
+<div class="section">
+    <h2>Grupos da escola</h2>
+
+    {% if grupos %}
+        <div class="desktop-only">
+            <div class="table-wrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Grupo</th>
+                            <th>Líder</th>
+                            <th>Supervisor</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for grupo in grupos %}
+                            <tr>
+                                <td><a href="{% url 'detalhe_grupo' grupo.id %}">{{ grupo.nome }}</a></td>
+                                <td>{{ grupo.lider.get_full_name|default:grupo.lider.username }}</td>
+                                <td>{{ grupo.supervisor.get_full_name|default:grupo.supervisor.username }}</td>
+                                <td>
+                                    {% if grupo.status == 'ativo' %}
+                                        <span class="badge badge-success">Ativo</span>
+                                    {% elif grupo.status == 'inativo' %}
+                                        <span class="badge badge-danger">Inativo</span>
+                                    {% else %}
+                                        <span class="badge badge-warning">{{ grupo.status }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mobile-only">
+            <div class="mobile-list">
+                {% for grupo in grupos %}
+                    <div class="mobile-card">
+                        <div class="mobile-card-header">
+                            <div>
+                                <div class="mobile-card-title">
+                                    <a href="{% url 'detalhe_grupo' grupo.id %}">{{ grupo.nome }}</a>
+                                </div>
+                                <div class="mobile-card-subtitle">{{ grupo.lider.get_full_name|default:grupo.lider.username }}</div>
+                            </div>
+                            <div>
+                                {% if grupo.status == 'ativo' %}
+                                    <span class="badge badge-success">Ativo</span>
+                                {% elif grupo.status == 'inativo' %}
+                                    <span class="badge badge-danger">Inativo</span>
+                                {% else %}
+                                    <span class="badge badge-warning">{{ grupo.status }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mobile-card-body">
+                            <div class="mobile-item"><strong>Supervisor:</strong> {{ grupo.supervisor.get_full_name|default:grupo.supervisor.username }}</div>
+                        </div>
+
+                        <div class="mobile-card-actions">
+                            <a class="btn btn-secondary" href="{% url 'detalhe_grupo' grupo.id %}">Abrir grupo</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">📚</div>
+            <h3>Nenhum grupo vinculado</h3>
+            <p>Esta escola ainda não possui grupos cadastrados dentro do contexto visível para este usuário.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

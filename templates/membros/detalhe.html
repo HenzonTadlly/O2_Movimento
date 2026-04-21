@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ membro.nome_completo }}{% endblock %}
+
+{% block content %}
+{% with page_title=membro.nome_completo page_subtitle='Veja os dados do membro e o histórico de presença.' %}
+    {% include 'partials/page_header.html' with page_title=page_title page_subtitle=page_subtitle breadcrumbs=breadcrumbs page_actions=page_actions %}
+{% endwith %}
+
+<div class="grid-cards">
+    <div class="card">
+        <h3>Idade</h3>
+        <strong>{{ membro.idade }}</strong>
+    </div>
+    <div class="card">
+        <h3>Grupo</h3>
+        <strong>{{ grupo.nome }}</strong>
+    </div>
+    <div class="card">
+        <h3>Presenças</h3>
+        <strong>{{ total_presencas }}</strong>
+    </div>
+    <div class="card">
+        <h3>Faltas</h3>
+        <strong>{{ total_faltas }}</strong>
+    </div>
+    <div class="card">
+        <h3>Percentual</h3>
+        <strong>{{ percentual_presenca }}%</strong>
+    </div>
+</div>
+
+<div class="section info-list">
+    <p><strong>Telefone:</strong> {{ membro.telefone|default:'-' }}</p>
+    <p><strong>Escola:</strong> {{ membro.escola.nome|default:'-' }}</p>
+    <p><strong>Ano escolar:</strong> {{ membro.ano_escolar }}</p>
+    <p>
+        <strong>Status:</strong>
+        {% if membro.ativo %}
+            <span class="badge badge-success">Ativo</span>
+        {% else %}
+            <span class="badge badge-danger">Inativo</span>
+        {% endif %}
+    </p>
+
+    {% if membro.observacao %}
+        <p><strong>Observação:</strong> {{ membro.observacao }}</p>
+    {% endif %}
+</div>
+
+<div class="section">
+    <h2>Histórico de frequência</h2>
+
+    {% if frequencias %}
+        <div class="desktop-only">
+            <div class="table-wrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for freq in frequencias %}
+                            <tr>
+                                <td>{{ freq.encontro.data_encontro }}</td>
+                                <td>
+                                    {% if freq.presente %}
+                                        <span class="badge badge-success">Presente</span>
+                                    {% else %}
+                                        <span class="badge badge-danger">Ausente</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mobile-only">
+            <div class="mobile-list">
+                {% for freq in frequencias %}
+                    <div class="mobile-card">
+                        <div class="mobile-card-header">
+                            <div class="mobile-card-title">{{ freq.encontro.data_encontro }}</div>
+                            <div>
+                                {% if freq.presente %}
+                                    <span class="badge badge-success">Presente</span>
+                                {% else %}
+                                    <span class="badge badge-danger">Ausente</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">📋</div>
+            <h3>Sem histórico de frequência</h3>
+            <p>Este membro ainda não possui registros de presença.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

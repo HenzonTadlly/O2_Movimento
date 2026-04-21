@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Supervisor{% endblock %}
+
+{% block content %}
+{% with page_title='Dashboard do Supervisor' page_subtitle='Acompanhe líderes, grupos, membros e a média da sua supervisão.' %}
+    {% include 'partials/page_header.html' with page_title=page_title page_subtitle=page_subtitle breadcrumbs=breadcrumbs page_actions=page_actions %}
+{% endwith %}
+
+<div class="grid-cards">
+    <div class="card">
+        <h3>Total de líderes</h3>
+        <strong>{{ total_lideres }}</strong>
+    </div>
+    <div class="card">
+        <h3>Total de grupos</h3>
+        <strong>{{ total_grupos }}</strong>
+    </div>
+    <div class="card">
+        <h3>Total de membros</h3>
+        <strong>{{ total_membros }}</strong>
+    </div>
+    <div class="card">
+        <h3>Média de presença</h3>
+        <strong>{{ media_presenca }}%</strong>
+    </div>
+</div>
+
+<div class="section">
+    <h2>Grupos supervisionados</h2>
+
+    <div class="mobile-list">
+        {% for grupo in grupos %}
+            <div class="mobile-card">
+                <div class="mobile-card-header">
+                    <div>
+                        <div class="mobile-card-title">
+                            <a href="{% url 'detalhe_grupo' grupo.id %}">{{ grupo.nome }}</a>
+                        </div>
+                        <div class="mobile-card-subtitle">{{ grupo.escola.nome }}</div>
+                    </div>
+                </div>
+
+                <div class="mobile-card-body">
+                    <div class="mobile-item"><strong>Líder:</strong> {{ grupo.lider.get_full_name|default:grupo.lider.username }}</div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="mobile-card">
+                <div class="mobile-card-body">
+                    <div class="mobile-item">Nenhum grupo encontrado.</div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

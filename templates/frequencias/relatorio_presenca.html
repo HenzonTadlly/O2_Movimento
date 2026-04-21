@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}Relatório de Presença{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Relatório de Presença - {{ grupo.nome }}</h1>
+
+<div class="grid-cards">
+    <div class="card">
+        <h3>Total de encontros</h3>
+        <strong>{{ total_encontros }}</strong>
+    </div>
+    <div class="card">
+        <h3>Total de membros</h3>
+        <strong>{{ total_membros }}</strong>
+    </div>
+    <div class="card">
+        <h3>Média de presença do grupo</h3>
+        <strong>{{ media_grupo }}%</strong>
+    </div>
+</div>
+
+<div class="section">
+    <div class="actions">
+        <a class="btn btn-secondary" href="{% url 'detalhe_grupo' grupo.id %}">Voltar para o grupo</a>
+    </div>
+
+    <h2>Resumo por membro</h2>
+
+    <div class="desktop-only">
+        <div class="table-wrap">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Membro</th>
+                        <th>Registros</th>
+                        <th>Presenças</th>
+                        <th>Faltas</th>
+                        <th>Percentual</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in relatorio_membros %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'detalhe_membro' item.membro.id %}">
+                                    {{ item.membro.nome_completo }}
+                                </a>
+                            </td>
+                            <td>{{ item.total_registros }}</td>
+                            <td>{{ item.total_presencas }}</td>
+                            <td>{{ item.total_faltas }}</td>
+                            <td>
+                                {% if item.percentual >= 75 %}
+                                    <span class="badge badge-success">{{ item.percentual }}%</span>
+                                {% elif item.percentual >= 50 %}
+                                    <span class="badge badge-warning">{{ item.percentual }}%</span>
+                                {% else %}
+                                    <span class="badge badge-danger">{{ item.percentual }}%</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5">Nenhum dado de presença encontrado.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="mobile-only">
+        <div class="mobile-list">
+            {% for item in relatorio_membros %}
+                <div class="mobile-card">
+                    <div class="mobile-card-header">
+                        <div>
+                            <div class="mobile-card-title">
+                                <a href="{% url 'detalhe_membro' item.membro.id %}">
+                                    {{ item.membro.nome_completo }}
+                                </a>
+                            </div>
+                        </div>
+                        <div>
+                            {% if item.percentual >= 75 %}
+                                <span class="badge badge-success">{{ item.percentual }}%</span>
+                            {% elif item.percentual >= 50 %}
+                                <span class="badge badge-warning">{{ item.percentual }}%</span>
+                            {% else %}
+                                <span class="badge badge-danger">{{ item.percentual }}%</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mobile-card-body">
+                        <div class="mobile-item"><strong>Registros:</strong> {{ item.total_registros }}</div>
+                        <div class="mobile-item"><strong>Presenças:</strong> {{ item.total_presencas }}</div>
+                        <div class="mobile-item"><strong>Faltas:</strong> {{ item.total_faltas }}</div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="mobile-card">
+                    <div class="mobile-card-body">
+                        <div class="mobile-item">Nenhum dado de presença encontrado.</div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

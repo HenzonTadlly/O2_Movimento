@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if modo_edicao %}Editar frequência{% else %}Lançar frequência{% endif %}
+{% endblock %}
+
+{% block content %}
+{% if modo_edicao %}
+    {% with page_title='Editar frequência' page_subtitle='Ajuste data, observação e presença dos membros.' %}
+        {% include 'partials/page_header.html' with page_title=page_title page_subtitle=page_subtitle breadcrumbs=breadcrumbs page_actions=page_actions %}
+    {% endwith %}
+{% else %}
+    {% with page_title='Lançar frequência' page_subtitle='Registre a presença dos membros deste grupo.' %}
+        {% include 'partials/page_header.html' with page_title=page_title page_subtitle=page_subtitle breadcrumbs=breadcrumbs page_actions=page_actions %}
+    {% endwith %}
+{% endif %}
+
+<div class="section">
+    {% if erro %}
+        <div class="alert alert-danger">
+            {{ erro }}
+        </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label>Data do encontro</label>
+            {{ form.data_encontro }}
+            {% if form.data_encontro.errors %}
+                <div class="field-errors">{{ form.data_encontro.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label>Observação</label>
+            {{ form.observacao }}
+            {% if form.observacao.errors %}
+                <div class="field-errors">{{ form.observacao.errors }}</div>
+            {% endif %}
+        </div>
+
+        <h2>Selecionar presentes</h2>
+
+        {% if membros %}
+            <ul class="list-clean">
+                {% for membro in membros %}
+                    <li>
+                        <label style="display:flex; align-items:center; gap:10px;">
+                            <input
+                                type="checkbox"
+                                name="presentes"
+                                value="{{ membro.id }}"
+                                {% if membro.id in presentes_marcados %}checked{% endif %}
+                            >
+                            <span>{{ membro.nome_completo }}</span>
+                        </label>
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <div class="actions" style="margin-top: 18px;">
+                <button class="btn" type="submit">
+                    {% if modo_edicao %}Salvar alterações{% else %}Salvar frequência{% endif %}
+                </button>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">👥</div>
+                <h3>Nenhum membro ativo</h3>
+                <p>Este grupo ainda não possui membros ativos para lançar frequência.</p>
+                <div class="actions">
+                    <a class="btn" href="{% url 'cadastrar_membro' grupo.id %}">Cadastrar membro</a>
+                    <a class="btn btn-secondary" href="{% url 'detalhe_grupo' grupo.id %}">Voltar ao grupo</a>
+                </div>
+            </div>
+        {% endif %}
+    </form>
+</div>
+{% endblock %}

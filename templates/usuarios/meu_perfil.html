@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Meu perfil{% endblock %}
+
+{% block content %}
+{% with page_title='Meu perfil' page_subtitle='Acompanhe seus dados cadastrais e personalize sua conta.' %}
+    {% include 'partials/page_header.html' with page_title=page_title page_subtitle=page_subtitle breadcrumbs=breadcrumbs page_actions=page_actions %}
+{% endwith %}
+
+<div class="grid-cards">
+    <div class="card">
+        <h3>Usuário</h3>
+        <strong>{{ usuario_perfil.username }}</strong>
+    </div>
+    <div class="card">
+        <h3>Tipo</h3>
+        <strong>{{ usuario_perfil.tipo_usuario|title }}</strong>
+    </div>
+    <div class="card">
+        <h3>Status</h3>
+        <strong>
+            {% if usuario_perfil.ativo %}
+                Ativo
+            {% else %}
+                Inativo
+            {% endif %}
+        </strong>
+    </div>
+</div>
+
+<div class="section info-list">
+    {% if usuario_perfil.foto %}
+        <div style="margin-bottom: 16px;">
+            <img src="{{ usuario_perfil.foto.url }}" alt="Foto do perfil" class="avatar" style="width:120px; height:120px; border:3px solid #e5e7eb;">
+        </div>
+    {% else %}
+        <div style="margin-bottom: 16px;">
+            <div class="avatar avatar-fallback" style="width:120px; height:120px; font-size:38px; border:3px solid #e5e7eb;">
+                {{ usuario_perfil.first_name|default:usuario_perfil.username|slice:":1"|upper }}
+            </div>
+        </div>
+    {% endif %}
+
+    <p><strong>Nome:</strong> {{ usuario_perfil.first_name|default:'-' }}</p>
+    <p><strong>Sobrenome:</strong> {{ usuario_perfil.last_name|default:'-' }}</p>
+    <p><strong>Email:</strong> {{ usuario_perfil.email|default:'-' }}</p>
+    <p><strong>Telefone:</strong> {{ usuario_perfil.telefone|default:'-' }}</p>
+</div>
+{% endblock %}

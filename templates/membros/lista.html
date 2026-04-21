@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block title %}Membros - {{ grupo.nome }}{% endblock %}
+
+{% block content %}
+{% with page_title='Membros do grupo' page_subtitle='Gerencie os membros e acompanhe o status de cada um.' %}
+    {% include 'partials/page_header.html' with page_title=page_title page_subtitle=page_subtitle breadcrumbs=breadcrumbs page_actions=page_actions %}
+{% endwith %}
+
+<div class="section">
+    <form method="get" class="actions">
+        <div class="form-group" style="flex:1;">
+            <label>Buscar membro</label>
+            <input type="text" name="busca" value="{{ filtros.busca }}" placeholder="Digite o nome do membro">
+        </div>
+
+        <div class="form-group">
+            <label>Status</label>
+            <select name="status">
+                <option value="">Todos</option>
+                <option value="ativos" {% if filtros.status == 'ativos' %}selected{% endif %}>Ativos</option>
+                <option value="inativos" {% if filtros.status == 'inativos' %}selected{% endif %}>Inativos</option>
+            </select>
+        </div>
+
+        <div class="actions" style="margin-top: 24px;">
+            <button class="btn" type="submit">Filtrar</button>
+            <a class="btn btn-secondary" href="{% url 'lista_membros' grupo.id %}">Limpar</a>
+        </div>
+    </form>
+</div>
+
+<div class="section">
+    {% if membros %}
+        <div class="desktop-only">
+            <div class="table-wrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Idade</th>
+                            <th>Ano escolar</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for membro in membros %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'detalhe_membro' membro.id %}">{{ membro.nome_completo }}</a>
+                                </td>
+                                <td>{{ membro.idade }}</td>
+                                <td>{{ membro.ano_escolar }}</td>
+                                <td>
+                                    {% if membro.ativo %}
+                                        <span class="badge badge-success">Ativo</span>
+                                    {% else %}
+                                        <span class="badge badge-danger">Inativo</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mobile-only">
+            <div class="mobile-list">
+                {% for membro in membros %}
+                    <div class="mobile-card">
+                        <div class="mobile-card-header">
+                            <div>
+                                <div class="mobile-card-title">{{ membro.nome_completo }}</div>
+                                <div class="mobile-card-subtitle">{{ membro.ano_escolar }}</div>
+                            </div>
+                            <div>
+                                {% if membro.ativo %}
+                                    <span class="badge badge-success">Ativo</span>
+                                {% else %}
+                                    <span class="badge badge-danger">Inativo</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mobile-card-body">
+                            <div class="mobile-item"><strong>Idade:</strong> {{ membro.idade }}</div>
+                        </div>
+
+                        <div class="mobile-card-actions">
+                            <a class="btn btn-secondary" href="{% url 'detalhe_membro' membro.id %}">Ver perfil</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% include 'partials/pagination.html' %}
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">🙋</div>
+            <h3>Nenhum membro encontrado</h3>
+            <p>Esse grupo ainda não possui membros cadastrados com os filtros atuais.</p>
+            <div class="actions">
+                <a class="btn" href="{% url 'cadastrar_membro' grupo.id %}">Cadastrar membro</a>
+                <a class="btn btn-secondary" href="{% url 'detalhe_grupo' grupo.id %}">Voltar ao grupo</a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

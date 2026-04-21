@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block title %}Cadastrar usuário{% endblock %}
+
+{% block content %}
+{% with page_title='Cadastrar usuário' page_subtitle='Crie um novo coordenador, supervisor ou líder conforme sua permissão.' %}
+    {% include 'partials/page_header.html' with page_title=page_title page_subtitle=page_subtitle breadcrumbs=breadcrumbs page_actions=page_actions %}
+{% endwith %}
+
+<div class="section">
+    <form method="post">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="form-group">
+            <label>Nome</label>
+            {{ form.first_name }}
+            {% if form.first_name.errors %}
+                <div class="field-errors">{{ form.first_name.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label>Sobrenome</label>
+            {{ form.last_name }}
+            {% if form.last_name.errors %}
+                <div class="field-errors">{{ form.last_name.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label>Usuário</label>
+            {{ form.username }}
+            {% if form.username.errors %}
+                <div class="field-errors">{{ form.username.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label>Email</label>
+            {{ form.email }}
+            {% if form.email.errors %}
+                <div class="field-errors">{{ form.email.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label>Telefone</label>
+            {{ form.telefone }}
+            {% if form.telefone.errors %}
+                <div class="field-errors">{{ form.telefone.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label>Tipo de usuário</label>
+            {{ form.tipo_usuario }}
+            {% if form.tipo_usuario.errors %}
+                <div class="field-errors">{{ form.tipo_usuario.errors }}</div>
+            {% endif %}
+        </div>
+
+        {% if form.coordenador_responsavel.field.widget.input_type != 'hidden' %}
+            <div class="form-group">
+                <label>Coordenador responsável</label>
+                {{ form.coordenador_responsavel }}
+                {% if form.coordenador_responsavel.errors %}
+                    <div class="field-errors">{{ form.coordenador_responsavel.errors }}</div>
+                {% endif %}
+            </div>
+        {% else %}
+            {{ form.coordenador_responsavel }}
+        {% endif %}
+
+        {% if form.supervisor_responsavel.field.widget.input_type != 'hidden' %}
+            <div class="form-group">
+                <label>Supervisor responsável</label>
+                {{ form.supervisor_responsavel }}
+                {% if form.supervisor_responsavel.errors %}
+                    <div class="field-errors">{{ form.supervisor_responsavel.errors }}</div>
+                {% endif %}
+            </div>
+        {% else %}
+            {{ form.supervisor_responsavel }}
+        {% endif %}
+
+        <div class="form-group">
+            <label>Senha</label>
+            {{ form.password }}
+            {% if form.password.errors %}
+                <div class="field-errors">{{ form.password.errors }}</div>
+            {% endif %}
+        </div>
+
+        {% if form.ativo %}
+            <div class="form-group">
+                <label style="display:flex; align-items:center; gap:10px;">
+                    {{ form.ativo }}
+                    <span>Usuário ativo</span>
+                </label>
+                {% if form.ativo.errors %}
+                    <div class="field-errors">{{ form.ativo.errors }}</div>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        <div class="actions">
+            <button class="btn" type="submit">Salvar usuário</button>
+            <a class="btn btn-secondary" href="{% url 'painel_redirect' %}">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

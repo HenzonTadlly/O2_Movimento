@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ titulo }}{% endblock %}
+
+{% block content %}
+{% with page_title=titulo page_subtitle='Configure escola, líder, supervisor e status do grupo.' %}
+    {% include 'partials/page_header.html' with page_title=page_title page_subtitle=page_subtitle breadcrumbs=breadcrumbs page_actions=page_actions %}
+{% endwith %}
+
+<div class="section">
+    <form method="post">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if erro %}
+            <div class="alert alert-danger">{{ erro }}</div>
+        {% endif %}
+
+        <div class="form-group">
+            <label>Nome do grupo</label>
+            {{ form.nome }}
+            {% if form.nome.errors %}
+                <div class="field-errors">{{ form.nome.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label>Escola</label>
+            {{ form.escola }}
+            {% if form.escola.errors %}
+                <div class="field-errors">{{ form.escola.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label>Líder</label>
+            {{ form.lider }}
+            {% if form.lider.errors %}
+                <div class="field-errors">{{ form.lider.errors }}</div>
+            {% endif %}
+        </div>
+
+        {% if form.supervisor.field.widget.input_type != 'hidden' %}
+            <div class="form-group">
+                <label>Supervisor</label>
+                {{ form.supervisor }}
+                {% if form.supervisor.errors %}
+                    <div class="field-errors">{{ form.supervisor.errors }}</div>
+                {% endif %}
+            </div>
+        {% else %}
+            {{ form.supervisor }}
+        {% endif %}
+
+        <div class="form-group">
+            <label>Status</label>
+            {{ form.status }}
+            {% if form.status.errors %}
+                <div class="field-errors">{{ form.status.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label>Descrição</label>
+            {{ form.descricao }}
+            {% if form.descricao.errors %}
+                <div class="field-errors">{{ form.descricao.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="actions">
+            <button class="btn" type="submit">Salvar grupo</button>
+            <a class="btn btn-secondary" href="{% url 'lista_grupos' %}">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

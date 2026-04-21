@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Escolas{% endblock %}
+
+{% block content %}
+{% with page_title='Escolas' page_subtitle='Cadastre, filtre e acompanhe as escolas vinculadas ao movimento.' %}
+    {% include 'partials/page_header.html' with page_title=page_title page_subtitle=page_subtitle breadcrumbs=breadcrumbs page_actions=page_actions %}
+{% endwith %}
+
+<div class="section">
+    <form method="get" class="actions">
+        <div class="form-group" style="flex:1;">
+            <label>Buscar escola</label>
+            <input type="text" name="busca" value="{{ filtros.busca }}" placeholder="Digite o nome da escola">
+        </div>
+
+        <div class="form-group">
+            <label>Status</label>
+            <select name="status">
+                <option value="">Todas</option>
+                <option value="ativas" {% if filtros.status == 'ativas' %}selected{% endif %}>Ativas</option>
+                <option value="inativas" {% if filtros.status == 'inativas' %}selected{% endif %}>Inativas</option>
+            </select>
+        </div>
+
+        <div class="actions" style="margin-top:24px;">
+            <button class="btn" type="submit">Filtrar</button>
+            <a class="btn btn-secondary" href="{% url 'lista_escolas' %}">Limpar</a>
+        </div>
+    </form>
+</div>
+
+<div class="section">
+    {% if escolas %}
+        <div class="desktop-only">
+            <div class="table-wrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Bairro</th>
+                            <th>Cidade</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for escola in escolas %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'detalhe_escola' escola.id %}">{{ escola.nome }}</a>
+                                </td>
+                                <td>{{ escola.bairro|default:'-' }}</td>
+                                <td>{{ escola.cidade|default:'-' }}</td>
+                                <td>
+                                    {% if escola.ativa %}
+                                        <span class="badge badge-success">Ativa</span>
+                                    {% else %}
+                                        <span class="badge badge-danger">Inativa</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mobile-only">
+            <div class="mobile-list">
+                {% for escola in escolas %}
+                    <div class="mobile-card">
+                        <div class="mobile-card-header">
+                            <div>
+                                <div class="mobile-card-title">
+                                    <a href="{% url 'detalhe_escola' escola.id %}">{{ escola.nome }}</a>
+                                </div>
+                                <div class="mobile-card-subtitle">{{ escola.cidade|default:'-' }}</div>
+                            </div>
+                            <div>
+                                {% if escola.ativa %}
+                                    <span class="badge badge-success">Ativa</span>
+                                {% else %}
+                                    <span class="badge badge-danger">Inativa</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mobile-card-body">
+                            <div class="mobile-item"><strong>Bairro:</strong> {{ escola.bairro|default:'-' }}</div>
+                            <div class="mobile-item"><strong>Cidade:</strong> {{ escola.cidade|default:'-' }}</div>
+                        </div>
+
+                        <div class="mobile-card-actions">
+                            <a class="btn btn-secondary" href="{% url 'detalhe_escola' escola.id %}">Ver escola</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% include 'partials/pagination.html' %}
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">🏫</div>
+            <h3>Nenhuma escola encontrada</h3>
+            <p>Cadastre uma escola ou ajuste os filtros para continuar.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

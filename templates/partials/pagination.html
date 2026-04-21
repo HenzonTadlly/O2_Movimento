@@ -1,0 +1,19 @@
+{% if page_obj.has_other_pages %}
+    <div class="section" style="padding: 14px 18px;">
+        <div class="actions" style="justify-content: center; align-items: center; gap: 8px; margin-bottom: 0;">
+            {% if page_obj.has_previous %}
+                <a class="btn btn-secondary" href="?{% if querystring %}{{ querystring }}&{% endif %}page=1">Primeira</a>
+                <a class="btn btn-secondary" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.previous_page_number }}">Anterior</a>
+            {% endif %}
+
+            <span style="padding: 10px 14px;">
+                Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+                <a class="btn btn-secondary" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.next_page_number }}">Próxima</a>
+                <a class="btn btn-secondary" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.paginator.num_pages }}">Última</a>
+            {% endif %}
+        </div>
+    </div>
+{% endif %}

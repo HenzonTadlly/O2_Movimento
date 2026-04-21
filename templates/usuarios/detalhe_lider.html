@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ lider.get_full_name|default:lider.username }}{% endblock %}
+
+{% block content %}
+{% with page_title=lider.get_full_name|default:lider.username page_subtitle='Veja grupos e membros vinculados a este líder.' %}
+    {% include 'partials/page_header.html' with page_title=page_title page_subtitle=page_subtitle breadcrumbs=breadcrumbs page_actions=page_actions %}
+{% endwith %}
+
+<div class="grid-cards">
+    <div class="card">
+        <h3>Usuário</h3>
+        <strong>{{ lider.username }}</strong>
+    </div>
+    <div class="card">
+        <h3>Total de grupos</h3>
+        <strong>{{ total_grupos }}</strong>
+    </div>
+    <div class="card">
+        <h3>Total de membros</h3>
+        <strong>{{ total_membros }}</strong>
+    </div>
+</div>
+
+<div class="section info-list">
+    <p><strong>Email:</strong> {{ lider.email|default:'-' }}</p>
+    <p><strong>Telefone:</strong> {{ lider.telefone|default:'-' }}</p>
+    <p><strong>Status:</strong>
+        {% if lider.ativo %}
+            <span class="badge badge-success">Ativo</span>
+        {% else %}
+            <span class="badge badge-danger">Inativo</span>
+        {% endif %}
+    </p>
+</div>
+
+<div class="section">
+    <h2>Grupos do líder</h2>
+
+    {% if grupos %}
+        <div class="desktop-only">
+            <div class="table-wrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Grupo</th>
+                            <th>Escola</th>
+                            <th>Supervisor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for grupo in grupos %}
+                            <tr>
+                                <td><a href="{% url 'detalhe_grupo' grupo.id %}">{{ grupo.nome }}</a></td>
+                                <td>{{ grupo.escola.nome }}</td>
+                                <td>{{ grupo.supervisor.get_full_name|default:grupo.supervisor.username }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mobile-only">
+            <div class="mobile-list">
+                {% for grupo in grupos %}
+                    <div class="mobile-card">
+                        <div class="mobile-card-header">
+                            <div>
+                                <div class="mobile-card-title">
+                                    <a href="{% url 'detalhe_grupo' grupo.id %}">{{ grupo.nome }}</a>
+                                </div>
+                                <div class="mobile-card-subtitle">{{ grupo.escola.nome }}</div>
+                            </div>
+                        </div>
+
+                        <div class="mobile-card-body">
+                            <div class="mobile-item"><strong>Supervisor:</strong> {{ grupo.supervisor.get_full_name|default:grupo.supervisor.username }}</div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">📚</div>
+            <h3>Nenhum grupo vinculado</h3>
+            <p>Este líder ainda não possui grupos cadastrados.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

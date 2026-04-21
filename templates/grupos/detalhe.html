@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ grupo.nome }}{% endblock %}
+
+{% block content %}
+{% with page_title=grupo.nome page_subtitle='Visualize membros, encontros e ações principais do grupo.' %}
+    {% include 'partials/page_header.html' with page_title=page_title page_subtitle=page_subtitle breadcrumbs=breadcrumbs page_actions=page_actions %}
+{% endwith %}
+
+<div class="grid-cards">
+    <div class="card">
+        <h3>Escola</h3>
+        <strong>{{ grupo.escola.nome }}</strong>
+    </div>
+    <div class="card">
+        <h3>Líder</h3>
+        <strong>{{ grupo.lider.get_full_name|default:grupo.lider.username }}</strong>
+    </div>
+    <div class="card">
+        <h3>Supervisor</h3>
+        <strong>{{ grupo.supervisor.get_full_name|default:grupo.supervisor.username }}</strong>
+    </div>
+</div>
+
+<div class="section">
+    <h2>Membros</h2>
+
+    {% if membros %}
+        <div class="desktop-only">
+            <div class="table-wrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Ano escolar</th>
+                            <th>Telefone</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for membro in membros %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'detalhe_membro' membro.id %}">{{ membro.nome_completo }}</a>
+                                </td>
+                                <td>{{ membro.ano_escolar }}</td>
+                                <td>{{ membro.telefone }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mobile-only">
+            <div class="mobile-list">
+                {% for membro in membros %}
+                    <div class="mobile-card">
+                        <div class="mobile-card-header">
+                            <div>
+                                <div class="mobile-card-title">{{ membro.nome_completo }}</div>
+                                <div class="mobile-card-subtitle">{{ membro.ano_escolar }}</div>
+                            </div>
+                        </div>
+                        <div class="mobile-card-body">
+                            <div class="mobile-item"><strong>Telefone:</strong> {{ membro.telefone }}</div>
+                        </div>
+                        <div class="mobile-card-actions">
+                            <a class="btn btn-secondary" href="{% url 'detalhe_membro' membro.id %}">Ver perfil</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">🙋</div>
+            <h3>Sem membros cadastrados</h3>
+            <p>Cadastre o primeiro membro para começar a acompanhar a frequência do grupo.</p>
+        </div>
+    {% endif %}
+</div>
+
+<div class="section">
+    <h2>Últimos encontros</h2>
+
+    {% if encontros %}
+        <div class="desktop-only">
+            <div class="table-wrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Observação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for encontro in encontros %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'detalhe_encontro' encontro.id %}">{{ encontro.data_encontro }}</a>
+                                </td>
+                                <td>{{ encontro.observacao|default:'-' }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mobile-only">
+            <div class="mobile-list">
+                {% for encontro in encontros %}
+                    <div class="mobile-card">
+                        <div class="mobile-card-header">
+                            <div>
+                                <div class="mobile-card-title">{{ encontro.data_encontro }}</div>
+                                <div class="mobile-card-subtitle">{{ grupo.nome }}</div>
+                            </div>
+                        </div>
+
+                        <div class="mobile-card-body">
+                            <div class="mobile-item"><strong>Observação:</strong> {{ encontro.observacao|default:'-' }}</div>
+                        </div>
+
+                        <div class="mobile-card-actions">
+                            <a class="btn btn-secondary" href="{% url 'detalhe_encontro' encontro.id %}">Abrir encontro</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">📅</div>
+            <h3>Sem encontros registrados</h3>
+            <p>Lance a primeira frequência para iniciar o histórico do grupo.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

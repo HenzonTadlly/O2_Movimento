@@ -1,0 +1,160 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}O2 Movimento{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=10">
+</head>
+<body>
+    <div class="app-shell">
+        <header class="mobile-header">
+            <div class="mobile-header-top">
+                <h1 class="brand">O2 Movimento</h1>
+                <button class="menu-toggle" type="button" aria-label="Abrir menu" onclick="toggleMenu()">
+                    ☰
+                </button>
+            </div>
+
+            <div class="mobile-user">
+                {% if request.user.foto %}
+                    <img src="{{ request.user.foto.url }}" alt="Foto do usuário" class="avatar avatar-mobile">
+                {% else %}
+                    <div class="avatar avatar-mobile avatar-fallback">
+                        {{ request.user.first_name|default:request.user.username|slice:":1"|upper }}
+                    </div>
+                {% endif %}
+
+                <strong>{{ request.user.get_full_name|default:request.user.username }}</strong>
+                <span>{{ request.user.tipo_usuario|title }}</span>
+            </div>
+
+            <nav id="mobileMenu" class="mobile-nav">
+                <a href="{% url 'painel_redirect' %}" class="{% if request.resolver_match.url_name == 'dashboard_admin' or request.resolver_match.url_name == 'dashboard_coordenador' or request.resolver_match.url_name == 'dashboard_supervisor' or request.resolver_match.url_name == 'dashboard_lider' or request.resolver_match.url_name == 'painel_redirect' %}active{% endif %}">Dashboard</a>
+
+                <a href="{% url 'lista_grupos' %}" class="{% if request.resolver_match.url_name == 'lista_grupos' or request.resolver_match.url_name == 'detalhe_grupo' or request.resolver_match.url_name == 'criar_grupo' or request.resolver_match.url_name == 'editar_grupo' %}active{% endif %}">Grupos</a>
+
+                {% if request.user.tipo_usuario == 'admin' %}
+                    <a href="{% url 'lista_coordenadores' %}" class="{% if request.resolver_match.url_name == 'lista_coordenadores' or request.resolver_match.url_name == 'detalhe_coordenador' %}active{% endif %}">Coordenadores</a>
+                {% endif %}
+
+                {% if request.user.tipo_usuario == 'admin' or request.user.tipo_usuario == 'coordenador' or request.user.tipo_usuario == 'supervisor' %}
+                    <a href="{% url 'lista_escolas' %}" class="{% if request.resolver_match.url_name == 'lista_escolas' or request.resolver_match.url_name == 'detalhe_escola' or request.resolver_match.url_name == 'criar_escola' or request.resolver_match.url_name == 'editar_escola' %}active{% endif %}">Escolas</a>
+                {% endif %}
+
+                {% if request.user.tipo_usuario == 'admin' or request.user.tipo_usuario == 'coordenador' %}
+                    <a href="{% url 'lista_supervisores' %}" class="{% if request.resolver_match.url_name == 'lista_supervisores' or request.resolver_match.url_name == 'detalhe_supervisor' %}active{% endif %}">Supervisores</a>
+                {% endif %}
+
+                {% if request.user.tipo_usuario == 'admin' or request.user.tipo_usuario == 'coordenador' or request.user.tipo_usuario == 'supervisor' %}
+                    <a href="{% url 'lista_lideres' %}" class="{% if request.resolver_match.url_name == 'lista_lideres' or request.resolver_match.url_name == 'detalhe_lider' %}active{% endif %}">Líderes</a>
+                    <a href="{% url 'criar_usuario' %}" class="{% if request.resolver_match.url_name == 'criar_usuario' or request.resolver_match.url_name == 'editar_usuario' %}active{% endif %}">Cadastrar usuário</a>
+                    <a href="{% url 'criar_grupo' %}" class="{% if request.resolver_match.url_name == 'criar_grupo' or request.resolver_match.url_name == 'editar_grupo' %}active{% endif %}">Criar grupo</a>
+                {% endif %}
+
+                <a href="{% url 'meu_perfil' %}" class="{% if request.resolver_match.url_name == 'meu_perfil' or request.resolver_match.url_name == 'editar_meu_perfil' or request.resolver_match.url_name == 'alterar_minha_senha' %}active{% endif %}">Meu perfil</a>
+
+                <a href="{% url 'logout' %}">Sair</a>
+            </nav>
+        </header>
+
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <h2>O2 Movimento</h2>
+                <p>Sistema de gestão do O2</p>
+            </div>
+
+            <div class="sidebar-user">
+                {% if request.user.foto %}
+                    <img src="{{ request.user.foto.url }}" alt="Foto do usuário" class="avatar avatar-sidebar">
+                {% else %}
+                    <div class="avatar avatar-sidebar avatar-fallback avatar-fallback-dark">
+                        {{ request.user.first_name|default:request.user.username|slice:":1"|upper }}
+                    </div>
+                {% endif %}
+
+                <strong>{{ request.user.get_full_name|default:request.user.username }}</strong>
+                <span>{{ request.user.tipo_usuario|title }}</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="{% url 'painel_redirect' %}" class="{% if request.resolver_match.url_name == 'dashboard_admin' or request.resolver_match.url_name == 'dashboard_coordenador' or request.resolver_match.url_name == 'dashboard_supervisor' or request.resolver_match.url_name == 'dashboard_lider' or request.resolver_match.url_name == 'painel_redirect' %}active{% endif %}">Dashboard</a>
+
+                <a href="{% url 'lista_grupos' %}" class="{% if request.resolver_match.url_name == 'lista_grupos' or request.resolver_match.url_name == 'detalhe_grupo' or request.resolver_match.url_name == 'criar_grupo' or request.resolver_match.url_name == 'editar_grupo' %}active{% endif %}">Grupos</a>
+
+                {% if request.user.tipo_usuario == 'admin' %}
+                    <a href="{% url 'lista_coordenadores' %}" class="{% if request.resolver_match.url_name == 'lista_coordenadores' or request.resolver_match.url_name == 'detalhe_coordenador' %}active{% endif %}">Coordenadores</a>
+                {% endif %}
+
+                {% if request.user.tipo_usuario == 'admin' or request.user.tipo_usuario == 'coordenador' or request.user.tipo_usuario == 'supervisor' %}
+                    <a href="{% url 'lista_escolas' %}" class="{% if request.resolver_match.url_name == 'lista_escolas' or request.resolver_match.url_name == 'detalhe_escola' or request.resolver_match.url_name == 'criar_escola' or request.resolver_match.url_name == 'editar_escola' %}active{% endif %}">Escolas</a>
+                {% endif %}
+
+                {% if request.user.tipo_usuario == 'admin' or request.user.tipo_usuario == 'coordenador' %}
+                    <a href="{% url 'lista_supervisores' %}" class="{% if request.resolver_match.url_name == 'lista_supervisores' or request.resolver_match.url_name == 'detalhe_supervisor' %}active{% endif %}">Supervisores</a>
+                {% endif %}
+
+                {% if request.user.tipo_usuario == 'admin' or request.user.tipo_usuario == 'coordenador' or request.user.tipo_usuario == 'supervisor' %}
+                    <a href="{% url 'lista_lideres' %}" class="{% if request.resolver_match.url_name == 'lista_lideres' or request.resolver_match.url_name == 'detalhe_lider' %}active{% endif %}">Líderes</a>
+                    <a href="{% url 'criar_usuario' %}" class="{% if request.resolver_match.url_name == 'criar_usuario' or request.resolver_match.url_name == 'editar_usuario' %}active{% endif %}">Cadastrar usuário</a>
+                    <a href="{% url 'criar_grupo' %}" class="{% if request.resolver_match.url_name == 'criar_grupo' or request.resolver_match.url_name == 'editar_grupo' %}active{% endif %}">Criar grupo</a>
+                {% endif %}
+
+                <a href="{% url 'meu_perfil' %}" class="{% if request.resolver_match.url_name == 'meu_perfil' or request.resolver_match.url_name == 'editar_meu_perfil' or request.resolver_match.url_name == 'alterar_minha_senha' %}active{% endif %}">Meu perfil</a>
+
+                <a href="{% url 'logout' %}">Sair</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% elif message.tags == 'warning' %}alert-warning{% elif message.tags == 'info' %}alert-info{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('mobileMenu');
+            if (menu) {
+                menu.classList.toggle('show');
+            }
+        }
+
+        function aplicarMascaraTelefone(valor) {
+            valor = valor.replace(/\D/g, '');
+
+            if (valor.length > 11) {
+                valor = valor.slice(0, 11);
+            }
+
+            if (valor.length <= 10) {
+                valor = valor.replace(/^(\d{2})(\d)/g, '($1) $2');
+                valor = valor.replace(/(\d{4})(\d)/, '$1-$2');
+            } else {
+                valor = valor.replace(/^(\d{2})(\d)/g, '($1) $2');
+                valor = valor.replace(/(\d{5})(\d)/, '$1-$2');
+            }
+
+            return valor;
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const camposTelefone = document.querySelectorAll('input[data-mask="telefone"]');
+
+            camposTelefone.forEach(function (campo) {
+                campo.addEventListener('input', function (e) {
+                    e.target.value = aplicarMascaraTelefone(e.target.value);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

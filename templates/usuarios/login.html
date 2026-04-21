@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrar | O2 Movimento</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=10">
+</head>
+<body class="auth-body">
+    <div class="auth-shell">
+        <div class="auth-card">
+            <div class="auth-brand">
+                <div class="auth-logo">O2</div>
+                <h1>O2 Movimento</h1>
+                <p>Sistema de gestão de células e acompanhamento de frequência</p>
+            </div>
+
+            {% if form.errors %}
+                <div class="alert alert-danger">
+                    Usuário ou senha inválidos. Tente novamente.
+                </div>
+            {% endif %}
+
+            {% if next %}
+                {% if user.is_authenticated %}
+                    <div class="alert alert-warning">
+                        Sua conta não tem permissão para acessar esta página.
+                    </div>
+                {% endif %}
+            {% endif %}
+
+            <form method="post" class="auth-form">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="id_username">Usuário</label>
+                    <input
+                        type="text"
+                        name="username"
+                        id="id_username"
+                        class="form-control"
+                        placeholder="Digite seu usuário"
+                        required
+                        autofocus
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="id_password">Senha</label>
+                    <input
+                        type="password"
+                        name="password"
+                        id="id_password"
+                        class="form-control"
+                        placeholder="Digite sua senha"
+                        required
+                    >
+                </div>
+
+                <button class="btn auth-submit" type="submit">Entrar</button>
+
+                {% if next %}
+                    <input type="hidden" name="next" value="{{ next }}">
+                {% endif %}
+            </form>
+
+            <div class="auth-footer">
+                <span>O2 Movimento</span>
+                <small>Acesso restrito aos usuários autorizados</small>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

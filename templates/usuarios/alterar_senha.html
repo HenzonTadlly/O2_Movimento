@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Alterar senha{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Alterar senha</h1>
+
+<div class="section">
+    <form method="post">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="form-group">
+            <label>Senha atual</label>
+            {{ form.old_password }}
+            {% if form.old_password.errors %}
+                <div class="alert alert-danger" style="margin-top:8px;">
+                    {{ form.old_password.errors }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label>Nova senha</label>
+            {{ form.new_password1 }}
+            {% if form.new_password1.errors %}
+                <div class="alert alert-danger" style="margin-top:8px;">
+                    {{ form.new_password1.errors }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label>Confirmar nova senha</label>
+            {{ form.new_password2 }}
+            {% if form.new_password2.errors %}
+                <div class="alert alert-danger" style="margin-top:8px;">
+                    {{ form.new_password2.errors }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="actions">
+            <button class="btn" type="submit">Salvar nova senha</button>
+            <a class="btn btn-secondary" href="{% url 'meu_perfil' %}">Voltar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
