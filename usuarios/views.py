@@ -357,10 +357,10 @@ def criar_usuario(request):
             usuario.set_password(form.cleaned_data['password'])
 
             if request.user.tipo_usuario == 'coordenador' and usuario.tipo_usuario == 'supervisor':
-                usuario.coordenador_responsavel = request.user
+                usuario.coordenador_responsavel = form.cleaned_data.get('coordenador_responsavel') or request.user
 
             if request.user.tipo_usuario == 'supervisor' and usuario.tipo_usuario == 'lider':
-                usuario.supervisor_responsavel = request.user
+                usuario.supervisor_responsavel = form.cleaned_data.get('supervisor_responsavel')
 
             usuario.save()
             messages.success(request, 'Usuário cadastrado com sucesso.')

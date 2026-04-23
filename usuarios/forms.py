@@ -60,12 +60,20 @@ class CriarUsuarioForm(BaseStyledForm, forms.ModelForm):
             ativo=True
         ).order_by('first_name', 'username')
 
+        self.fields['coordenador_responsavel'].required = False
+        self.fields['supervisor_responsavel'].required = False
+
         if tipo_logado == 'supervisor':
             self.fields['tipo_usuario'].choices = [
                 ('lider', 'Líder'),
             ]
             self.fields['coordenador_responsavel'].widget = forms.HiddenInput()
-            self.fields['supervisor_responsavel'].widget = forms.HiddenInput()
+
+            if usuario_logado:
+                self.fields['supervisor_responsavel'].queryset = Usuario.objects.filter(
+                    id=usuario_logado.id
+                ).order_by('first_name', 'username')
+                self.fields['supervisor_responsavel'].empty_label = "Selecione"
 
         elif tipo_logado == 'coordenador':
             self.fields['tipo_usuario'].choices = [
@@ -73,15 +81,17 @@ class CriarUsuarioForm(BaseStyledForm, forms.ModelForm):
                 ('lider', 'Líder'),
             ]
 
-            self.fields['coordenador_responsavel'].queryset = Usuario.objects.filter(
-                id=usuario_logado.id
-            )
+            if usuario_logado:
+                self.fields['coordenador_responsavel'].queryset = Usuario.objects.filter(
+                    id=usuario_logado.id
+                )
 
-            self.fields['supervisor_responsavel'].queryset = Usuario.objects.filter(
-                tipo_usuario='supervisor',
-                ativo=True,
-                coordenador_responsavel=usuario_logado
-            ).order_by('first_name', 'username')
+                self.fields['supervisor_responsavel'].queryset = Usuario.objects.filter(
+                    tipo_usuario='supervisor',
+                    ativo=True,
+                    coordenador_responsavel=usuario_logado
+                ).order_by('first_name', 'username')
+                self.fields['supervisor_responsavel'].empty_label = "Selecione"
 
         elif tipo_logado == 'admin':
             self.fields['tipo_usuario'].choices = [
@@ -89,6 +99,8 @@ class CriarUsuarioForm(BaseStyledForm, forms.ModelForm):
                 ('supervisor', 'Supervisor'),
                 ('lider', 'Líder'),
             ]
+            self.fields['coordenador_responsavel'].empty_label = "Selecione"
+            self.fields['supervisor_responsavel'].empty_label = "Selecione"
 
         self.apply_classes()
 
@@ -154,6 +166,9 @@ class EditarUsuarioForm(BaseStyledForm, forms.ModelForm):
             ativo=True
         ).order_by('first_name', 'username')
 
+        self.fields['coordenador_responsavel'].required = False
+        self.fields['supervisor_responsavel'].required = False
+
         if self.instance.tipo_usuario == 'coordenador':
             self.fields['coordenador_responsavel'].widget = forms.HiddenInput()
             self.fields['supervisor_responsavel'].widget = forms.HiddenInput()
@@ -179,7 +194,7 @@ class EditarUsuarioForm(BaseStyledForm, forms.ModelForm):
             if usuario_logado and usuario_logado.tipo_usuario == 'supervisor':
                 self.fields['supervisor_responsavel'].queryset = Usuario.objects.filter(
                     id=usuario_logado.id
-                )
+                ).order_by('first_name', 'username')
 
         self.apply_classes()
 
